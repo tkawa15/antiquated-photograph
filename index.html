@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<htlm lang="ja">
+    <head>
+        <title>廃れるデジタル画像</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="destyle.css" />
+        <style>
+            #img-iroase {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0;
+            }
+            #img-hokori {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+    <body>
+        <input id="file-input" type="file" />
+        <img id="img-uploaded" src="" />
+        <img id="img-iroase" src="./data/iroase.jpg" />
+        <img id="img-hokori" src="./data/hokori.png" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.2.1/exif.min.js"></script>
+        <script type='text/javascript'>
+            $(function () {
+                //1年を「12」として、月の差をひいてく
+                //現在 - 写真
+                $('#file-input').change(function () {
+                    var file_input = $('#file-input');
+                    var file = file_input[0].files[0];
+
+                    // 画像以外は処理を停止
+                    if (!file.type.match('image.*')) {
+                        $(this).val('');
+                        return;
+                    }
+
+                    // EXIF.getDataでexif情報を解析
+                    EXIF.getData(file, function () {
+                        // EXIF.getTag(this, "[exifのタグ名]")で値を取得
+                        console.log(EXIF.getTag(this, "DateTimeOriginal"));
+                        const date = (EXIF.getTag(this, "DateTimeOriginal").replace(' ', ':')).split(':');
+                        // 0 → 年, 1 → 月, 2 → 日, 3 → 時, 4 → 分, 5 → 秒
+                        const dateImg = date.map(d => parseInt(d));
+                        // console.log(dateImg);
+
+                        // 現在の日時を取得
+                        const now = new Date();
+                        const dateNow = [now.getFullYear(), (now.getMonth() + 1), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()];
+                        // console.log(dateNow)
+
+                        //日付を計算して色褪せ透明度を決定
+                        let month = (dateNow[0] - dateImg[0]) * 12;
+                        month += (dateNow[1] - dateImg[1]);
+                        console.log(month + "ヶ月前");
+                        $('#img-iroase').css('opacity', month * 0.01);
+
+                        // アップした画像をセット
+                        const fileURL = window.URL.createObjectURL(file);
+                        image.src = fileURL;
+                        $('#file-input').hide();
+                        $('#img-uploaded').attr('src', fileURL);
+                    });
+
+                    // 画像をセットした後
+                    let image = new Image();
+                    image.onload = function () {
+                        // iroase.jpg の大きさを設定
+                        // window.innerWidth : h = image.width : image.height
+                        $('#img-uploaded').width(window.innerWidth);
+                        $('#img-iroase').width(window.innerWidth);
+                        $('#img-iroase').height((window.innerWidth * image.height) / image.width);
+                        $('#img-iroase').show();
+                        $('#img-hokori').width(window.innerWidth);
+                        $('#img-hokori').height((window.innerWidth * image.height) / image.width);
+                        $('#img-hokori').show();
+                    };
+
+                });
+            });
+            $('#img-hokori').bind('touchmove', function () {
+                event.preventDefault();
+                $(this).hide();
+            });
+        </script>
+    </body>
+</htlm>
