@@ -4,20 +4,20 @@
         <title>廃れるデジタル画像</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="destyle.css" />
-        <style>
-            #img-iroase {
+        <style type="text/css">
+            #file-input {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translateY(-50%) translateX(-50%);
+                -webkit-transform: translateY(-50%) translateX(-50%);
+            }
+            #img-iroase, #img-hokori {
                 display: none;
                 position: absolute;
                 top: 0;
                 left: 0;
                 opacity: 0;
-            }
-            #img-hokori {
-                display: none;
-                position: absolute;
-                top: 0;
-                left: 0;
-                opacity: 0.5;
             }
         </style>
     </head>
@@ -61,6 +61,7 @@
                         month += (dateNow[1] - dateImg[1]);
                         console.log(month + "ヶ月前");
                         $('#img-iroase').css('opacity', month * 0.01);
+                        $('#img-hokori').css('opacity', 0.5);
 
                         // アップした画像をセット
                         const fileURL = window.URL.createObjectURL(file);
