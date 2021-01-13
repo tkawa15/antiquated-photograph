@@ -3,29 +3,41 @@
     <head>
         <title>廃れるデジタル画像</title>
         <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="destyle.css" />
         <style type="text/css">
-            #file-input {
+            body {
+                background-image: url("./data/iroase.jpg")
+            }
+            #input-wrapper {
+                display: inline-block;
+                font-size: 20px;
+                border: 1px brown solid;
+                padding: 10px 20px;
+            }
+            #file-input,
+            #img-uploaded,
+            #img-iroase,
+            #img-hokori {
+                display: none;
+            }
+            .centering {
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translateY(-50%) translateX(-50%);
                 -webkit-transform: translateY(-50%) translateX(-50%);
             }
-            #img-iroase, #img-hokori {
-                display: none;
-                position: absolute;
-                top: 0;
-                left: 0;
-                opacity: 0;
-            }
         </style>
     </head>
     <body>
-        <input id="file-input" type="file" />
-        <img id="img-uploaded" src="" />
-        <img id="img-iroase" src="./data/iroase.jpg" />
-        <img id="img-hokori" src="./data/hokori.png" />
+        <img id="img-uploaded" class="centering" src="" />
+        <img id="img-iroase" class="centering" src="./data/iroase.jpg" />
+        <img id="img-hokori" class="centering" src="./data/hokori.png" />
+        <label id="input-wrapper" class="centering" for="file-input">
+            <input id="file-input" type="file" />
+            写真を選択する
+        </label>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.2.1/exif.min.js"></script>
         <script type='text/javascript'>
@@ -66,7 +78,7 @@
                         // アップした画像をセット
                         const fileURL = window.URL.createObjectURL(file);
                         image.src = fileURL;
-                        $('#file-input').hide();
+                        $('#input-wrapper').hide();
                         $('#img-uploaded').attr('src', fileURL);
                     });
 
@@ -74,13 +86,21 @@
                     let image = new Image();
                     image.onload = function () {
                         // iroase.jpg の大きさを設定
-                        // window.innerWidth : h = image.width : image.height
-                        $('#img-uploaded').width(window.innerWidth);
-                        $('#img-iroase').width(window.innerWidth);
-                        $('#img-iroase').height((window.innerWidth * image.height) / image.width);
+                        // 縦横比を計算してウィンドウウサイズに合わせて大きさを設定
+                        let imgWidth = window.innerWidth;
+                        let imgHeight = (window.innerWidth * image.height) / image.width;
+                        if((window.innerWidth / window.innerHeight) > (image.width / image.height)) {
+                            imgHeight = window.innerHeight;
+                            imgWidth = (window.innerHeight * image.width) / image.height;
+                        }
+                        $('#img-uploaded').width(imgWidth);
+                        $('#img-uploaded').height(imgHeight);
+                        $('#img-uploaded').show();
+                        $('#img-iroase').width(imgWidth);
+                        $('#img-iroase').height(imgHeight);
                         $('#img-iroase').show();
-                        $('#img-hokori').width(window.innerWidth);
-                        $('#img-hokori').height((window.innerWidth * image.height) / image.width);
+                        $('#img-hokori').width(imgWidth);
+                        $('#img-hokori').height(imgHeight);
                         $('#img-hokori').show();
                     };
 
